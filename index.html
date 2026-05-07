@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Webマダミス GM チャット</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, sans-serif; max-width: 840px; margin: 0 auto; padding: 16px; }
+    #log { border: 1px solid #9994; border-radius: 8px; padding: 12px; min-height: 50vh; }
+    .msg { margin: 8px 0; line-height: 1.5; white-space: pre-wrap; }
+    .user { font-weight: 600; }
+    .assistant { color: #0a7; }
+    form { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 12px; }
+    input, button { font-size: 16px; padding: 10px; }
+    #status { margin-top: 8px; opacity: .75; }
+  </style>
+</head>
+<body>
+  <h1>Webマダミス GM チャット</h1>
+  <div id="log"></div>
+
+  <form id="chat-form">
+    <input id="message" type="text" placeholder="推理や質問を入力" autocomplete="off" required />
+    <button type="submit">送信</button>
+  </form>
+  <div id="status"></div>
+
+  <script>
+    const log = document.getElementById('log');
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('message');
+    const statusEl = document.getElementById('status');
+
+    const history = [];
+
+    function addMessage(role, content) {
+      const div = document.createElement('div');
+      div.className = `msg ${role}`;
+      div.textContent = `${role === 'user' ? 'あなた' : 'GM'}: ${content}`;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    async function sendMessage(message) {
+      statusEl.textContent = '送信中...';
+      try {
+        const response = await fetch('/chat.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, history })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || `HTTP ${response.status}`);
+        }
+        history.push({ role: 'user', content: message });
+        history.push({ role: 'assistant', content: data.reply });
+        addMessage('assistant', data.reply);
+        statusEl.textContent = '完了';
+      } catch (error) {
+        statusEl.textContent = `エラー: ${error.message}`;
+      }
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const message = input.value.trim();
+      if (!message) return;
+      addMessage('user', message);
+      input.value = '';
+      input.focus();
+      await sendMessage(message);
+    });
+
+    addMessage('assistant', 'ようこそ。事件の手がかりを一緒に整理しましょう。');
+  </script>
+</body>
+</html>
