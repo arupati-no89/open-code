@@ -17,13 +17,51 @@ OpenCode + ローカルLLM（Ollama）で、ブラウザからAIと対話でき�
    ollama pull gemma3:4b
    ```
 
-## 起動方法（初心者向け）
+## 起動方法（初心者向け・Windows でこのフォルダに保存した場合）
+
+このプロジェクトの保管場所（例）:
+
+`D:\Users\m_tam\15_ツール\open-code-main\open-code-main`
+
+以下は「初めてでも迷いにくい手順」です。
+
+### 1) ターミナルを開く
+
+- **おすすめ**: VS Code の「ターミナル」
+- もしくは **PowerShell** / **Git Bash**
+
+> `bin/start.sh` はシェルスクリプトなので、PowerShell だけだと実行しづらい場合があります。  
+> その場合は **Git Bash** を使うのが簡単です。
+
+### 2) プロジェクトフォルダへ移動
+
+Git Bash では次を実行:
+
+```bash
+cd "/d/Users/m_tam/15_ツール/open-code-main/open-code-main"
+```
+
+> Windows の `D:\` は、Git Bash では `/d/` と表記します。
+
+### 3) 起動スクリプトを実行
 
 ```bash
 ./bin/start.sh
 ```
 
-ブラウザで `http://127.0.0.1:8080/index.html` を開いてください。
+### 4) ブラウザで開く
+
+起動後に次のURLを開いてください。
+
+- `http://127.0.0.1:8080/index.html`
+
+### 5) うまく動かない時の確認ポイント
+
+1. Ollama が起動しているか
+2. モデルを pull 済みか（`ollama list` で確認）
+3. `chat.php` のモデル名が実際のモデル名と一致しているか
+
+---
 
 ## 停止方法
 
